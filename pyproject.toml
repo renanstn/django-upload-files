@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "django-upload-files"
+version = "0.1.0"
+description = ""
+authors = ["Renan Santana <renan_ota@hotmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^4.0.5"
+djangorestframework = "^3.13.1"
+
+[tool.poetry.dev-dependencies]
+black = "^22.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+exclude = '''
+/(
+  | migrations
+)/
+'''
