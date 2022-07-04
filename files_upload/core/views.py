@@ -1,14 +1,17 @@
+import uuid
+import datetime
+
 from django.http import FileResponse
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core import models, serializers
 
 
-class SimpleUploadFileViewSet(viewsets.ModelViewSet):
+class FileViewSet(viewsets.ModelViewSet):
     """
-    This first example, is a simple view used to upload and serve files
+    This first example, is a simple view used to upload, list and serve files
     """
 
     queryset = models.File.objects.all()
@@ -22,26 +25,46 @@ class SimpleUploadFileViewSet(viewsets.ModelViewSet):
         return response
 
 
-class ProcessUploadedFileViewSet(viewsets.ViewSet):
+class StudentViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     """
-    In this second example, we receive a file, proccess it, and save only a few
-    values on Student model.
-    The expected CSV must be in a form field called "file", and must contain
-    this columns:
-    - First name
-    - Last name
-    - SSN
+    In this second example, we can populate a Student model by sent a CSV file
     """
 
-    def create(self, request):
+    queryset = models.Student.objects.all()
+    serializer_class = serializers.StudentSerializer
+
+    @action(detail=False, methods=["post"])
+    def create_students_from_csv(self, request):
+        """
+        The expected CSV must be in a form field called "file", and must
+        contain this columns:
+        - First name
+        - Last name
+        - SSN
+        """
         file = request.FILES.get("file", False)
         if not file:
             return Response("Where is the file?", status.HTTP_400_BAD_REQUEST)
 
-        serializer = serializers.ProcessUploadedFileSerializer(
+        # Use file data to populate Student model
+        student_serializer = serializers.ProcessUploadedFileSerializer(
             data={"file": file}
         )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        student_serializer.is_valid(raise_exception=True)
+        student_serializer.save()
+
+        # Save file too
+        file_name, file_extension = file.name.split(".")
+        full_file_name = f"{file_name}{uuid.uuid4().hex[:8]}.{file_extension}"
+        file_serializer = serializers.FileSerializer(
+            data={
+                "name": full_file_name,
+                "upload_datetime": datetime.datetime.now(),
+                "comments": "file saved automatically",
+                "file": file,
+            }
+        )
+        file_serializer.is_valid(raise_exception=True)
+        file_serializer.save()
 
         return Response("file processed with success", status.HTTP_201_CREATED)

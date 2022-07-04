@@ -9,13 +9,15 @@ from core import models
 class FileSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.File
-        fields = "__all__"
+        fields = ("id", "name", "upload_datetime", "comments", "file")
+        read_only_fields = ("id",)
 
 
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Student
-        fields = "__all__"
+        fields = ("id", "name", "ssn")
+        read_only_fields = ("id",)
 
 
 class ProcessUploadedFileSerializer(serializers.Serializer):

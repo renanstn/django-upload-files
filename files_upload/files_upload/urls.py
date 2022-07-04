@@ -6,12 +6,9 @@ from core import views
 
 
 router = routers.DefaultRouter()
-router.register(r"simple-upload-files", views.SimpleUploadFileViewSet)
-router.register(
-    r"process-file-upload",
-    views.ProcessUploadedFileViewSet,
-    basename="process_file_upload",
-)
+
+router.register(r"files", views.FileViewSet)
+router.register(r"students", views.StudentViewSet, basename="students")
 
 urlpatterns = [
     path("", include(router.urls)),
