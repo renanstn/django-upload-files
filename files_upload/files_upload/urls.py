@@ -7,8 +7,8 @@ from core import views
 
 router = routers.DefaultRouter()
 
-router.register(r"files", views.FileViewSet)
-router.register(r"students", views.StudentViewSet, basename="students")
+router.register(r"files", views.FileViewSet, basename="file")
+router.register(r"students", views.StudentViewSet, basename="student")
 
 urlpatterns = [
     path("", include(router.urls)),
