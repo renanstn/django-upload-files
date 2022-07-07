@@ -1,4 +1,5 @@
 import uuid
+
 from django.db import models
 
 
@@ -17,6 +18,13 @@ class Student(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=255)
     ssn = models.CharField(max_length=11)
+    from_file = models.ForeignKey(
+        File,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="students",
+    )
 
     def __str__(self) -> str:
         return self.name
